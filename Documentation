@@ -1,0 +1,46 @@
+
+Service:
+
+Componente que permite la ejecución de procesos en segundo plano, estos son independientes de la interfaz
+de usuario y se ejecutan incluso cuando la aplicacion esta en background o cuando nos movemos entre actividades. Un servicio es
+ejecutad en el hilo principal por lo cual puede ocurrir un ANR si este es de larga duracion, si el proceso es demasiado largo es recomendable ejecutarlo
+en un segundo hilo de trabajo(subproceso).
+
+Existen 3 tipos de servicios:
+- Primer plano: Aquellos que el usuario esta conciente de ellos, por ejemplo una cancion reproduciendose.
+- Segundo plano: Un proceso que el usuario no nota, por ejemplo la actualizacion de datos.
+  Tanto primer como segundo plano ambos se vinculan con el metodo startCommand(), recibe un intent con los datos necesarios
+  para su funcionamiento y se destruyen cuando se llama la funcion stopService(). Esto se conoce como iniciados.
+- Enlazados: cuando se vincula por medio de onBind() este permite comunicacion entre el componente y el servicio y
+  se destruye cuando la comunicacion termina.
+
+
+En servicios iniciados el proceso del hilo se maneja en el metodo startCommand() y se regresa una bandera para
+llevar a cabo uno de los siguientes comportamientos:
+
+"Flags are only relevant when the phone runs out of memory and kills the service before it finishes executing. START_STICKY
+tells the OS to recreate the service after it has enough memory and call onStartCommand() again with a null intent. START_NOT_STICKY
+tells the OS to not bother recreating the service again. There is also a third code START_REDELIVER_INTENT that tells the OS to
+recreate the service and redeliver the same intent to onStartCommand()"
+
+Un servicio debe de ser llamado explicitamente(por medio de su clase) esto implica no colocar intent filters a su definicion en el
+manifest, ya que es probable que no exista componente servicio que atienda un intent y bloquee la app que lo intente llamar.
+
+
+
+En esta practica se ejecutan dos tipos de servicios:
+- El primero es una melodia que suena de fondo durante y que puede ser detenida en cualquier momento, un checkbox nos permite
+  decidir si el servicio continua cuando la actividad este en background.
+- El segundo es una tarea que bloquea el hilo donde es ejecutado por N segundos. Para esto se genera un hilo de trabajo y se
+  realiza la comunicacion mediante un Handler. Dentro del handleMessage del handler se envia una notificacion al usuario, debido
+  a que el handler es creado dentro del servicio, la notificacion en enviada incluso cuando la aplicacion esta en segundo plano.
+
+
+IntentService:
+- Es una subclase de Service que ejecuta un servicio y lo destruye automaticamente una vez que el proceso interno haya concluido,
+  se envia un intent con la informacion para el funcionamiento del servicio y se maneja en el metodo handleIntent. El metodo onStop
+  se llama automaticamente despues de que handleIntent haya concluido. Este servicio crea un hilo propio por lo cual no se bloquea el
+  hilo principal.
+
+
+
